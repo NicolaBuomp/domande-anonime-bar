@@ -2,17 +2,20 @@
 
 Per Nicola (gestore e responsabile del rilascio). Tutti i comandi SQL si lanciano nel **SQL Editor del progetto Supabase di produzione** (`domande-bar-prod`), salvo dove indicato.
 
-Indirizzi (da completare quando sono noti):
-- Form pubblico: `https://…` (= `NEXT_PUBLIC_SITE_URL`)
-- Admin: `https://…/admin` · QR: `https://…/admin/qr` · Schermo: `https://…/screen`
-- Supabase prod: `https://supabase.com/dashboard/project/…`
-- Vercel: `https://vercel.com/…/domande-anonime-bar`
+Indirizzi:
+- Form pubblico: `https://domande-anonime-bar.vercel.app` (= `NEXT_PUBLIC_SITE_URL`)
+- Admin: `https://domande-anonime-bar.vercel.app/admin` · QR: `https://domande-anonime-bar.vercel.app/admin/qr` · Schermo: `https://domande-anonime-bar.vercel.app/screen`
+- Preview della PR (protetta): `https://domande-anonime-bar-git-build-mvp-nicolabuomps-projects.vercel.app`
+- Supabase prod: `https://supabase.com/dashboard/project/<ref di domande-bar-prod>` (si crea dopo la pausa di staging, §0.1)
+- Supabase staging: `https://supabase.com/dashboard/project/gbkkewqazxftrvrspngx` (in pausa dopo i test)
+- Vercel: `https://vercel.com/nicolabuomps-projects/domande-anonime-bar`
+- Password dei DB, token di bypass e gestore di test: nel Portachiavi (`domande-bar-*`)
 
 ---
 
 ## 0. Preparazione dell'infrastruttura (una volta, entro giovedì mattina)
 
-1. **Supabase**: due progetti nella regione UE, `domande-bar-staging` e `domande-bar-prod`. Su entrambi:
+1. **Supabase**: due progetti nella regione UE (`eu-central-1`), `domande-bar-staging` e `domande-bar-prod`, in NicolaBuomp's Org. Il piano free ammette 2 progetti attivi per persona e lafossa-events-management ne occupa uno: staging si mette **in pausa** dopo e2e e load test sulla preview, poi si crea prod. Su entrambi:
    - Authentication → Sign In / Providers: **"Allow new users to sign up" disattivato**, anonymous sign-ins disattivato, provider **Email attivo** (serve al login del gestore);
    - Authentication → URL Configuration: Site URL = URL pubblico dell'ambiente.
 2. **Migration**: `supabase link --project-ref <ref>` e poi `supabase db push`, prima su staging, poi su prod. Controllo: `select public.retention_status();` mostra `"schedule": "0 * * * *", "active": true`.
