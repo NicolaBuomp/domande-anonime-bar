@@ -68,7 +68,10 @@ jobs:
   review:
     name: review (REVIEW.md)
     # Repo pubblico: mai su PR da fork (niente segreti a codice esterno) e non sulle draft.
+    # Spento finché non c'è il secret ANTHROPIC_API_KEY: si accende con la variabile
+    # di repo ENABLE_CLAUDE_REVIEW=true (i secret non sono leggibili negli `if` dei job).
     if: >-
+      vars.ENABLE_CLAUDE_REVIEW == 'true' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       !github.event.pull_request.draft
     runs-on: ubuntu-latest
