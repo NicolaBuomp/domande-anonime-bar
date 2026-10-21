@@ -50,6 +50,7 @@ export const t = {
     confirmDelete: "Sicuro?",
     emptyAll: "Ancora nessuna domanda. Arriveranno qui da sole.",
     emptyNew: "Hai letto tutto. 🎉",
+    announceNew: (text: string) => `Nuova domanda: ${text}`,
     actionError: "Non ci sono riuscito, riprova.",
     sessionExpired: "Sessione scaduta.",
     loginAgain: "Accedi di nuovo",

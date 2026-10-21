@@ -42,7 +42,8 @@ export function AdminBoard() {
     const { data, error, status } = await supabase
       .from("questions")
       .select(QUESTION_COLUMNS)
-      .order("created_at", { ascending: true })
+      // le 500 più recenti (spec A8): con più righe si perdono le vecchie, mai le nuove
+      .order("created_at", { ascending: false })
       .limit(500);
     if (error) {
       if (isAuthError(status, error.code)) setSessionExpired(true);
@@ -86,7 +87,7 @@ export function AdminBoard() {
         setQuestions((m) => new Map(m).set(q.id, q));
         if (payload.eventType === "INSERT") {
           markFresh(q.id);
-          setAnnouncement(`Nuova domanda: ${q.text}`);
+          setAnnouncement(t.admin.announceNew(q.text));
         }
       })
       .subscribe((status) => {
