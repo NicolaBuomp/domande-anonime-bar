@@ -15,7 +15,8 @@
     "e2e": "playwright test",
     "db:reset": "supabase db reset && supabase gen types typescript --local > src/lib/database.types.ts",
     "loadtest": "node scripts/loadtest.mjs",
-    "start:local": "node scripts/with-local-env.mjs next start"
+    "start:local": "node scripts/with-local-env.mjs next start",
+    "check:bundle": "node scripts/check-client-bundle.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
