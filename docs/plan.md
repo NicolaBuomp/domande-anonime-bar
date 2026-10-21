@@ -1,6 +1,6 @@
 # Plan: domande anonime per la serata al bar
 
-Stato: **draft, in attesa di approvazione**. Data: 21/10/2026.
+Stato: **approvato** il 21/10/2026 (comprese le modifiche di §10). Deviazioni registrate in §13.
 Input: [`docs/spec.md`](spec.md) (approvata il 21/10 con tutti i default, compresi il cookie `did` e il tetto per IP). Fonte primaria: [`intent/intent.md`](../intent/intent.md).
 
 Scadenza: **in produzione e provato giovedì 22/10 sera**. Evento: venerdì 23/10.
