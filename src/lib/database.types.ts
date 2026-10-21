@@ -94,6 +94,12 @@ export type Database = {
 "mark_read":
 { Args: { "p_id": string }; Returns: undefined
                            },
+"purge_expired":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
+"retention_status":
+{ Args: Record<PropertyKey, never>; Returns: Json
+                           },
 "submit_question":
 { Args: { "p_cooldown_s": number,"p_device_hash": string,"p_ip_hash": string,"p_ip_max_per_min": number,"p_max_per_window": number,"p_nickname"?: string,"p_text": string,"p_window_h": number }; Returns: Json
                            }
