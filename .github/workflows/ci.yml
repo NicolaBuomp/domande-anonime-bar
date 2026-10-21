@@ -1,0 +1,103 @@
+name: CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      # Senza env apposta: /screen è prerenderizzata e non deve creare client in render.
+      - name: Build (senza variabili d'ambiente)
+        run: npm run build
+
+      - uses: supabase/setup-cli@v3
+        with:
+          version: 2.120.0
+
+      - name: Supabase locale (migration applicate all'avvio)
+        run: supabase start -x studio,imgproxy,edge-runtime,logflare,vector,storage-api,postgres-meta
+
+      - name: Test unit + integrazione + RLS
+        run: npm test
+
+      - name: Browser Playwright
+        run: npx playwright install --with-deps chromium webkit
+
+      - name: E2E (build + start con le chiavi locali)
+        run: npm run e2e
+
+      - name: Nessun segreto nel bundle client
+        run: |
+          export SUPABASE_SERVICE_ROLE_KEY="$(supabase status -o json | jq -r .SERVICE_ROLE_KEY)"
+          export SUBMIT_SALT="e2e-salt-0123456789abcdef0123456789abcdef"
+          npm run check:bundle
+
+      - name: Report Playwright
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  review:
+    name: review (REVIEW.md)
+    # Repo pubblico: mai su PR da fork (niente segreti a codice esterno) e non sulle draft.
+    # Spento finché non c'è il secret ANTHROPIC_API_KEY: si accende con la variabile
+    # di repo ENABLE_CLAUDE_REVIEW=true (i secret non sono leggibili negli `if` dei job).
+    if: >-
+      vars.ENABLE_CLAUDE_REVIEW == 'true' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      !github.event.pull_request.draft
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      pull-requests: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - uses: anthropics/claude-code-action@v1
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          track_progress: true
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+
+            Fai la review di questa PR seguendo ESATTAMENTE REVIEW.md (leggilo per primo),
+            con le tre passate: Bug, Sicurezza, Compliance. Fonti di verità: docs/spec.md,
+            docs/plan.md (incluso il registro deviazioni §13) e CLAUDE.md.
+            Classifica ogni punto come Important o Nit (massimo 5 nit).
+            Usa commenti inline per i punti su righe specifiche e un commento finale
+            con il formato di output di REVIEW.md. Scrivi in italiano.
+          claude_args: |
+            --allowedTools "mcp__github_inline_comment__create_inline_comment,Bash(gh pr comment:*),Bash(gh pr diff:*),Bash(gh pr view:*),Read,Grep,Glob"
