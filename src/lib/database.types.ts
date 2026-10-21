@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "questions": {
+            "app_admins": {
+                  Row: {
+                    "user_id": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "user_id": string
+                  }
+                  Update: {
+                    "user_id"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"questions": {
                   Row: {
                     "created_at": string,"id": string,"nickname": string | null,"on_air_at": string | null,"read_at": string | null,"status": Database["public"]['Enums']["question_status"],"text": string
                   }
@@ -57,7 +71,16 @@ export type Database = {
             [_ in never]: never
           }
           Functions: {
-            "submit_question":
+            "go_on_air":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"is_admin":
+{ Args: Record<PropertyKey, never>; Returns: boolean
+                           },
+"mark_read":
+{ Args: { "p_id": string }; Returns: undefined
+                           },
+"submit_question":
 { Args: { "p_cooldown_s": number,"p_device_hash": string,"p_ip_hash": string,"p_ip_max_per_min": number,"p_max_per_window": number,"p_nickname"?: string,"p_text": string,"p_window_h": number }; Returns: Json
                            }
           }
