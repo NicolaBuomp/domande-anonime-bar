@@ -438,3 +438,4 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 | S0 | Porte Supabase locali **553xx** (API 55321, DB 55322) invece di 543xx | Sulla macchina gira già un altro progetto Supabase locale sulle porte di default. In CI non cambia nulla. |
 | S0 | Aggiunto `e2e/smoke.spec.ts` | Verifica fin da S0 che la pipeline Playwright (build + start + Chromium/WebKit) funzioni. |
 | S0 | L'hook su Bash blocca **qualsiasi** comando che contenga un deploy in produzione, anche dentro `echo` o `grep` | Falso positivo accettato: meglio bloccare troppo che troppo poco. Per testare l'hook si usano payload da file. |
+| S1 | Aggiunti `scripts/with-local-env.mjs` (script `dev:local`, `start:local`) e `.claude/launch.json` | Avviano l'app con le chiavi di `supabase status` senza `.env.local`, che l'hook non permette di scrivere. Servono anche per la verifica visiva. |

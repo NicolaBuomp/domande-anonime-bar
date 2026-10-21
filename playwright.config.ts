@@ -5,6 +5,8 @@ import { defineConfig, devices } from "@playwright/test";
 // In locale: build + start con le chiavi dello stack Supabase locale.
 const remote = process.env.E2E_BASE_URL;
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
+// porta dedicata: la 3000 può essere occupata da un `next dev` lasciato aperto
+const PORT = 3100;
 
 function localEnv(): Record<string, string> {
   const s = JSON.parse(
@@ -29,7 +31,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [["list"], ["html", { open: "never" }]] : "list",
   use: {
-    baseURL: remote ?? "http://localhost:3000",
+    baseURL: remote ?? `http://localhost:${PORT}`,
     trace: "retain-on-failure",
     extraHTTPHeaders: bypass ? { "x-vercel-protection-bypass": bypass } : undefined,
   },
@@ -40,8 +42,8 @@ export default defineConfig({
   webServer: remote
     ? undefined
     : {
-        command: "npm run build && npm run start",
-        url: "http://localhost:3000",
+        command: `npm run build && npm run start -- -p ${PORT}`,
+        url: `http://localhost:${PORT}`,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
         env: localEnv(),

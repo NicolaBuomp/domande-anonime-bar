@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "dev:local": "node scripts/with-local-env.mjs next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
@@ -13,7 +14,8 @@
     "test:unit": "vitest run --project unit",
     "e2e": "playwright test",
     "db:reset": "supabase db reset && supabase gen types typescript --local > src/lib/database.types.ts",
-    "loadtest": "node scripts/loadtest.mjs"
+    "loadtest": "node scripts/loadtest.mjs",
+    "start:local": "node scripts/with-local-env.mjs next start"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
