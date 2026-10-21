@@ -1,7 +1,7 @@
-// Dati del locale. Nome e logo sono placeholder finché non arrivano quelli veri (spec B2).
+// Dati del locale (spec B2).
 export const site = {
-  barName: "Il Bar",
-  logoSrc: "/logo.svg",
+  barName: "Chapeau Coffee",
+  logoSrc: "/logo.png",
 } as const;
 
 /** URL pubblico di produzione codificato nel QR (mai quello della richiesta corrente). */

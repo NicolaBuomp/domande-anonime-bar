@@ -77,7 +77,7 @@ docs/spec.md                          stato → approvata + modifiche di §10
 docs/plan.md                          questo file
 docs/runbook.md                       S9
 
-public/logo.svg                       placeholder (sostituibile)
+public/logo.png                       logo del locale (era il placeholder logo.svg)
 src/config/site.ts                    nome del bar (placeholder "Il Bar"), percorso del logo, URL del sito
 src/lib/strings.ts                    tutti i testi UI della spec §7 (un solo posto)
 src/lib/text.ts                       normalize(), charCount() (code point), validateQuestion()
@@ -453,3 +453,6 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 | S5 | Client Supabase di `/screen` creato solo negli effetti (non in render) | La build senza env falliva: `/screen` è prerenderizzata e il client veniva creato durante il render. In S8 la CI fa `npm run build` **senza** env Supabase per bloccare la regressione. |
 | S8 | Action alle major attuali (checkout/setup-node/upload-artifact v7, supabase/setup-cli v3) e job `review` solo su PR non draft | Le versioni del piano erano generiche. La review automatica su ogni push di una PR draft costerebbe senza servire: parte con `ready_for_review` e sui push successivi. |
 | S8 | Branch protection applicata: PR obbligatoria (0 approvazioni), check `checks` richiesto, regole valide anche per gli admin, niente force push e cancellazioni | Verificata con un push diretto su `main`, rifiutato (GH006). |
+| S9 | Logo in `public/logo.png` (non SVG), ricostruito dal file del locale: disco nero nuovo e monogramma ricentrato | L'originale era uno screenshot con il disco tagliato dai bordi e non concentrico al monogramma. La spec B2 ammette il PNG. |
+| S9 | Un solo progetto Supabase free attivo per volta oltre a quello già esistente: staging va in pausa dopo e2e e load test sulla preview, poi si crea prod | Il piano free ammette 2 progetti attivi per persona su tutte le org. Venerdì gli hotfix si provano in locale. |
+| S9 | Protezione Vercel ristretta alle sole preview (`ssoProtection: preview`) | Il default del progetto proteggeva anche l'URL di produzione `*.vercel.app`: dal QR i clienti avrebbero visto il login Vercel. |
