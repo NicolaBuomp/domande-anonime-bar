@@ -90,7 +90,7 @@ export async function POST(req: NextRequest) {
 
     const { data, error } = await getServiceClient().rpc("submit_question", {
       p_text: valid.text,
-      p_nickname: valid.nickname,
+      p_nickname: valid.nickname ?? undefined, // assente = default null della funzione
       p_device_hash: deviceHash({ ip, userAgent, did, salt }),
       p_ip_hash: ipHash(ip, salt),
       p_cooldown_s: COOLDOWN_S,
@@ -126,7 +126,7 @@ export async function POST(req: NextRequest) {
   if (did !== existingDid) {
     res.cookies.set(DEVICE_COOKIE, did, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: req.nextUrl.protocol === "https:", // su Vercel sempre https
       sameSite: "lax",
       path: "/",
       maxAge: DEVICE_COOKIE_MAX_AGE_S,
