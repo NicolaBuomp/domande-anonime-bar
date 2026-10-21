@@ -68,7 +68,7 @@ pg_cron ogni ora ──▶ purge_expired()  (questions + submit_log > 48h)
 CLAUDE.md                             < 1 pagina (comandi, convenzioni, architettura, "Cose da non sbagliare")
 REVIEW.md                             tre passate: bug, sicurezza, compliance
 README.md                             breve, rimanda a CLAUDE.md e docs/
-vercel.json                           regions fra1, nessun deploy automatico di main
+vercel.json                           regions fra1, nessun deploy dal branch development (S9)
 next.config.ts                        header di sicurezza
 eslint.config.mjs, .prettierrc, postcss.config.mjs, tsconfig.json, vitest.config.ts, playwright.config.ts
 package.json                          script (§5)
@@ -457,3 +457,5 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 | S9 | Un solo progetto Supabase free attivo per volta oltre a quello già esistente: staging va in pausa dopo e2e e load test sulla preview, poi si crea prod | Il piano free ammette 2 progetti attivi per persona su tutte le org. Venerdì gli hotfix si provano in locale. |
 | S9 | Protezione Vercel ristretta alle sole preview (`ssoProtection: preview`) | Il default del progetto proteggeva anche l'URL di produzione `*.vercel.app`: dal QR i clienti avrebbero visto il login Vercel. |
 | S9 | Job `review` (claude-code-action) **spento**: parte solo con la variabile di repo `ENABLE_CLAUDE_REVIEW=true` | Nessun credito API per `ANTHROPIC_API_KEY` (decisione di Nicola). È il taglio n. 1 di §11. La review secondo `REVIEW.md` la faccio in sessione prima del merge. |
+| S9 | Branch `development` (sostituisce `build/mvp`, eliminato) senza deploy; **merge su `main` = deploy automatico in produzione** (`vercel.json`: `deploymentEnabled.development = false` al posto di `main = false`) | Decisione di Nicola. Supera l'alternativa scartata in §8.3: la produzione resta autorizzata da lui, perché il merge su `main` (protetto, PR obbligatoria) lo fa solo lui. La PR #1 è sostituita dalla PR da `development`. |
+| S9 | Review secondo `REVIEW.md` fatta in sessione: 1 Important corretto (la risincronizzazione dell'admin prendeva le 500 domande più **vecchie**: oltre 500 righe sparivano le nuove), test `e2e/admin-volume.spec.ts`; 1 nit (annuncio per screen reader spostato in `strings.ts`) | Il job automatico è spento (vedi sopra). |

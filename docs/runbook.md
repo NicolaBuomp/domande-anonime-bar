@@ -5,7 +5,6 @@ Per Nicola (gestore e responsabile del rilascio). Tutti i comandi SQL si lancian
 Indirizzi:
 - Form pubblico: `https://domande-anonime-bar.vercel.app` (= `NEXT_PUBLIC_SITE_URL`)
 - Admin: `https://domande-anonime-bar.vercel.app/admin` · QR: `https://domande-anonime-bar.vercel.app/admin/qr` · Schermo: `https://domande-anonime-bar.vercel.app/screen`
-- Preview della PR (protetta): `https://domande-anonime-bar-git-build-mvp-nicolabuomps-projects.vercel.app`
 - Supabase prod: `https://supabase.com/dashboard/project/<ref di domande-bar-prod>` (si crea dopo la pausa di staging, §0.1)
 - Supabase staging: `https://supabase.com/dashboard/project/gbkkewqazxftrvrspngx` (in pausa dopo i test)
 - Vercel: `https://vercel.com/nicolabuomps-projects/domande-anonime-bar`
@@ -28,8 +27,8 @@ Indirizzi:
    - **Preview** → progetto staging; **Production** → progetto prod;
    - `SUBMIT_SALT` diverso nei due ambienti (`openssl rand -hex 32`);
    - `NEXT_PUBLIC_SITE_URL` = URL **di produzione** in entrambi (è quello che finisce nel QR).
-   - `vercel.json` disattiva il deploy automatico di `main`: la produzione parte solo per tua scelta.
-5. **E2E sulla preview**, dalla PR:
+   - Branch: si lavora su `development` (nessun deploy, lo esclude `vercel.json`) e si apre una PR verso `main`. **Il merge su `main` è il deploy in produzione** (automatico): lo fai solo tu. Gli altri branch generano preview protette.
+5. **E2E sulla preview** (staging va riattivato dal dashboard e prod messo in pausa, vedi punto 1). `development` non genera preview: per averne una, `vercel` senza opzioni dal tuo terminale oppure un branch di appoggio.
    ```bash
    E2E_BASE_URL=https://<preview>.vercel.app E2E_ADMIN_EMAIL=… E2E_ADMIN_PASSWORD=… VERCEL_AUTOMATION_BYPASS_SECRET=… npm run e2e
    ```
@@ -37,7 +36,7 @@ Indirizzi:
    VERCEL_AUTOMATION_BYPASS_SECRET=… npm run loadtest -- --url https://<preview>.vercel.app
    ```
    Contro la preview il load test parte da un solo IP: molti `429 busy` sono **attesi**. Conta solo che ci sia "nessun 5xx".
-6. **Produzione** (solo dopo l'e2e verde sulla preview): merge della PR su `main` e poi, dal tuo terminale su `main` aggiornato, `vercel --prod`. In alternativa usa "Promote to Production" dal dashboard, ma subito dopo fai i controlli del punto 7.
+6. **Produzione** (solo dopo l'e2e verde): merge della PR `development` → `main`. Vercel fa partire da solo il deploy di produzione: aspetta "Ready" nel dashboard e fai subito i controlli del punto 7. Rollback: "Instant Rollback" al deploy precedente, dal dashboard.
 7. **Controlli in produzione** (le variabili `NEXT_PUBLIC_` sono fissate al momento della build):
    - `/admin/qr` mostra in alto "URL nel QR:" con l'URL di **produzione**;
    - una domanda di prova dal telefono compare in `/admin` (quindi punta al DB di prod), poi la elimini.
