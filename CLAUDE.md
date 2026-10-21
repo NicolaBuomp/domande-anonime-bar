@@ -12,7 +12,7 @@ Fonte di verità: `docs/spec.md` (cosa) e `docs/plan.md` (come, in che ordine). 
 | `npm test` | `Test Files  N passed (N)` / `Tests  N passed (N)`, exit 0. "Avvia Supabase" = DB spento |
 | `npm run e2e` | `✓ … [mobile-chromium] …`, `✓ … [mobile-webkit] …`, `N passed`, exit 0 |
 
-Altri: `npm run dev` (dev sempre sul Supabase locale: le chiavi di `supabase status` vincono su `.env.local`), `npm run test:unit` (senza DB), `npm run db:reset` (migration + tipi), `npm run check:bundle` (dopo il build: niente segreti nel client), `npm run loadtest -- --url …`.
+Altri: `npm run dev` (dev sempre sul Supabase locale: le chiavi di `supabase status` vincono su `.env.local`), `npm run admin:local -- <email>` (gestore nel DB locale, stampa la password), `npm run test:unit` (senza DB), `npm run db:reset` (migration + tipi), `npm run check:bundle` (dopo il build: niente segreti nel client), `npm run loadtest -- --url …`.
 Un task è finito solo con build, lint, unit ed e2e verdi. Se un test fallisce si corregge il codice, non il test.
 
 ## Architettura

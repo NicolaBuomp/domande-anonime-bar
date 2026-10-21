@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node scripts/with-local-env.mjs next dev",
+    "admin:local": "node scripts/with-local-env.mjs node scripts/create-local-admin.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
