@@ -1,6 +1,6 @@
 # Spec: domande anonime per la serata al bar
 
-Stato: **draft, in attesa di approvazione**. Data: 21/10/2026.
+Stato: **approvata** il 21/10/2026 con tutti i default (A1 compreso). Aggiornata con le modifiche di [`plan.md` §10](plan.md).
 Input: [`intent/intent.md`](../intent/intent.md) e le decisioni già prese sullo stack (Next.js App Router + TypeScript su Vercel, Supabase, Tailwind).
 Evento: venerdì 23/10/2026. In produzione e provato entro giovedì 22/10 sera.
 
@@ -47,6 +47,7 @@ Unico punto di scrittura delle domande. Usa la service role, che vive solo sul s
 ```
 
 **Pipeline, in quest'ordine:**
+0. Raccolta chiusa (`SUBMISSIONS_OPEN=false`) → `503 { "error": "closed" }`.
 1. Content-Type o JSON non validi, oppure body troppo grande → `400 { "error": "bad_request" }`.
 2. **Honeypot** non vuoto → `201 { "ok": true }` **senza salvare nulla** (successo finto, così il bot non capisce di essere stato scartato). Non conta per il rate limit.
 3. **Normalizzazione** di `text` e `nickname`: NFC, rimozione dei caratteri di controllo e zero-width, sostituzione di ogni sequenza di spazi o a capo con uno spazio singolo, trim. Un nickname vuoto diventa `null`.
@@ -56,7 +57,7 @@ Unico punto di scrittura delle domande. Usa la service role, che vive solo sul s
 7. **Rate limit e inserimento atomici**, con un'unica chiamata alla funzione Postgres `submit_question` (§3.4):
    - cooldown: l'ultima domanda accettata dallo stesso `device_hash` risale a meno di 60 s fa → `429 { "error": "cooldown", "retryAfter": <secondi> }` e header `Retry-After`;
    - tetto per sera: 10 domande accettate per `device_hash` nelle ultime 12 ore → `429 { "error": "daily_limit" }`;
-   - tetto per IP (§9 A1): 30 domande accettate per `ip_hash` nell'ultimo minuto → `429 { "error": "busy", "retryAfter": <secondi> }`;
+   - tetto per IP (§9 A1): 30 domande accettate per `ip_hash` nell'ultimo minuto (sovrascrivibile con `RATE_LIMIT_IP_PER_MINUTE`) → `429 { "error": "busy", "retryAfter": <secondi> }`;
    - altrimenti inserisce la riga in `questions` e quella in `submit_log` nella stessa transazione → `201 { "ok": true }`.
 8. Qualsiasi altro errore → `500 { "error": "server" }`. Nei log finiscono solo il codice di errore e lo stack: **mai** testo, nickname, IP, user agent o hash.
 
@@ -192,7 +193,8 @@ ip_hash     = sha256("ip|" + ip + "|" + SUBMIT_SALT)
 
 ### 3.4 Funzioni Postgres
 
-- `submit_question(p_text, p_nickname, p_device_hash, p_ip_hash) returns jsonb`: prende `pg_advisory_xact_lock` su `device_hash` (così due richieste concorrenti dello stesso dispositivo non passano entrambe), conta in `submit_log` le righe che servono ai tre limiti di §2.2, e inserisce in `questions` e `submit_log` oppure restituisce `{ "status": "cooldown" | "daily_limit" | "busy", "retry_after": n }`. I limiti sono costanti nella funzione (60 s, 10/12 h, 30 per IP al minuto) e duplicati in `src/lib/limits.ts` solo per i messaggi.
+- `submit_question(p_text, p_nickname, p_device_hash, p_ip_hash, p_cooldown_s, p_max_per_window, p_window_h, p_ip_max_per_min) returns jsonb`: prende `pg_advisory_xact_lock` su `device_hash` (così due richieste concorrenti dello stesso dispositivo non passano entrambe), conta in `submit_log` le righe che servono ai tre limiti di §2.2, e inserisce in `questions` e `submit_log` oppure restituisce `{ "status": "cooldown" | "daily_limit" | "busy", "retry_after": n }`. I limiti arrivano come parametri dal server, che li prende da `src/lib/limits.ts` (unica fonte: 60 s, 10/12 h, 30 per IP al minuto con override da env). Così si possono cambiare durante la serata senza migration.
+- `purge_expired() returns jsonb` (cancellazione delle righe con più di 48 h, usata dal cron) e `retention_status()` (stato del job), eseguibili solo da `service_role`.
 - `go_on_air(p_id uuid)`: `is_admin()`, poi in transazione `update … set status='read', read_at=now() where status='on_air' and id <> p_id` e `update … set status='on_air', on_air_at=now() where id = p_id and status = 'new'`. Se la domanda non esiste o non è `new` → errore `not_found_or_invalid_state`.
 - `mark_read(p_id uuid)`: `is_admin()`, poi `new|on_air → read`.
 - Transizioni ammesse: `new→on_air`, `new→read`, `on_air→read`, più l'eliminazione da qualsiasi stato. Nessun ritorno indietro (§9 B3).
@@ -207,10 +209,8 @@ ip_hash     = sha256("ip|" + ip + "|" + SUBMIT_SALT)
 ### 3.6 Retention (pg_cron)
 
 ```sql
-select cron.schedule('retention-48h', '0 * * * *', $$
-  delete from public.questions  where created_at < now() - interval '48 hours';
-  delete from public.submit_log where created_at < now() - interval '48 hours';
-$$);
+select cron.schedule('retention-48h', '0 * * * *', 'select public.purge_expired()');
+-- purge_expired(): delete da questions e submit_log dove created_at < now() - interval '48 hours'
 ```
 Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si svuota da sola tramite il trigger. L'esito si verifica in `cron.job_run_details` (procedura nel runbook).
 
@@ -223,6 +223,8 @@ Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si
 | `SUPABASE_SERVICE_ROLE_KEY` | **solo server** | usata solo in `POST /api/questions`; mai importata da file client |
 | `SUBMIT_SALT` | **solo server** | ≥ 32 byte casuali |
 | `NEXT_PUBLIC_SITE_URL` | client + server | URL di produzione codificato nel QR |
+| `RATE_LIMIT_IP_PER_MINUTE` | solo server, facoltativa | default 30 |
+| `SUBMISSIONS_OPEN` | solo server, facoltativa | default `true`; `false` chiude la raccolta (503) |
 
 ---
 
@@ -264,6 +266,7 @@ Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si
 | `/` | 429 `busy` | `form.busy` con countdown |
 | `/` | rete assente o timeout (10 s) | `form.offline`, campi intatti, il pulsante resta attivo per riprovare |
 | `/` | 500 | `form.serverError` |
+| `/` | 503 `closed` | `form.closed`, pulsante disabilitato |
 | `/admin` | lista vuota | `admin.emptyAll` |
 | `/admin` | nessuna nuova (ma ci sono lette) | `admin.emptyNew` |
 | `/admin` | niente in onda | `admin.noOnAir` |
@@ -312,6 +315,7 @@ Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si
 | `form.busy` | Un attimo di pazienza: riprova tra {s} secondi. |
 | `form.offline` | Sembra che la connessione non ci sia. La tua domanda è ancora qui: riprova. |
 | `form.serverError` | Qualcosa è andato storto. Riprova tra poco. |
+| `form.closed` | Per stasera le domande sono chiuse. Grazie! |
 | `form.privacy` | Non salviamo chi sei. Per evitare lo spam teniamo un codice tecnico anonimo, cancellato dopo 48 ore insieme alle domande. |
 | `thanks.title` | Grazie! 🙌 |
 | `thanks.again` | Fai un'altra domanda |
@@ -427,7 +431,7 @@ Default se mancano: placeholder "Il Bar" e logo testuale, sostituibili con un fi
 
 **B7. Cosa vuol dire "a sera" per il tetto di 10.** Default: finestra mobile di 12 ore.
 
-**B8. Chiusura della raccolta.** Dopo la serata il form resta aperto (fino a 48 h la retention lo ripulisce). Non c'è un interruttore "domande chiuse" perché non è nell'intent. Default: nessun interruttore. Se serve, si può disattivare la route da env nel runbook.
+**B8. Chiusura della raccolta.** Dopo la serata il form resta aperto (fino a 48 h la retention lo ripulisce). Non c'è un interruttore "domande chiuse" in UI perché non è nell'intent. Esiste però un kill switch da env (`SUBMISSIONS_OPEN=false` + redeploy), descritto nel runbook.
 
 **B9. Svuotamento d'emergenza.** Nessun pulsante "svuota tutto" in UI (rischio di tap accidentale da telefono). Default: per togliere qualcosa dallo schermo bastano "Letta" o "Elimina". Lo svuotamento totale si fa con SQL dal dashboard Supabase, descritto nel runbook.
 
