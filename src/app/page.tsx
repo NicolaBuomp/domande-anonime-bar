@@ -5,18 +5,31 @@ import { QuestionForm } from "./QuestionForm";
 
 export default function Home() {
   return (
-    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 px-4 py-8">
-      <header className="flex flex-col items-center gap-3 text-center">
-        <Image src={site.logoSrc} alt={site.barName} width={72} height={72} unoptimized priority />
-        <h1 className="text-2xl font-bold leading-tight text-balance">{t.form.title}</h1>
-        <p className="text-base text-gray-700 dark:text-gray-300">{t.form.subtitle}</p>
+    <main className="flex w-full flex-1 flex-col">
+      {/* testata nel nero del marchio: il logo ci si appoggia senza bordo */}
+      <header className="bg-black px-5 pt-7 pb-8 text-white dark:bg-raised">
+        <div className="mx-auto flex max-w-md flex-col gap-6">
+          <Image
+            src={site.logoSrc}
+            alt={site.barName}
+            width={56}
+            height={56}
+            unoptimized
+            priority
+          />
+          <div className="flex flex-col gap-3">
+            <h1 className="text-[2.125rem] leading-[1.05] font-bold tracking-[-0.02em] text-balance">
+              {t.form.title}
+            </h1>
+            <p className="text-lg text-white/80">{t.form.subtitle}</p>
+          </div>
+        </div>
       </header>
 
-      <QuestionForm />
-
-      <p className="mt-auto text-center text-sm text-gray-600 dark:text-gray-400">
-        {t.form.privacy}
-      </p>
+      <div className="mx-auto flex w-full max-w-md flex-1 flex-col gap-10 px-5 pt-7 pb-8">
+        <QuestionForm />
+        <p className="mt-auto text-sm text-muted">{t.form.privacy}</p>
+      </div>
     </main>
   );
 }

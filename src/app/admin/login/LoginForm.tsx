@@ -4,8 +4,7 @@ import { useState, type FormEvent } from "react";
 import { t } from "@/lib/strings";
 import { getBrowserClient } from "@/lib/supabase/browser";
 
-const inputClass =
-  "min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 text-base text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100";
+const inputClass = "field min-h-12";
 
 export function LoginForm({ next }: { next: string }) {
   const [busy, setBusy] = useState(false);
@@ -70,7 +69,7 @@ export function LoginForm({ next }: { next: string }) {
       <button
         type="submit"
         disabled={busy}
-        className="min-h-12 rounded-xl bg-amber-500 px-5 text-lg font-bold text-gray-950 hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:opacity-60"
+        className="btn-primary min-h-12 text-lg disabled:cursor-wait"
       >
         {t.login.submit}
       </button>

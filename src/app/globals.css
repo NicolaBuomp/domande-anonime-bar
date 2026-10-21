@@ -1,27 +1,73 @@
 @import "tailwindcss";
 
+/* Token (taste-skill v2, regole "app screen"): il nero del marchio come inchiostro e primario,
+   un solo colore, l'ambra della spia "in onda", e solo su ciò che è in onda o nuovo. */
 :root {
-  --background: #ffffff;
-  --foreground: #111827;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ground: #ffffff;
+  --raised: #f3f3f2;
+  --line: #e4e4e2;
+  --control: #cfcfcc;
+  --ink: #111111;
+  --muted: #5c5c59;
+  --primary: #111111;
+  --on-primary: #ffffff;
+  --air: #f2a413;
+  --air-ink: #8a5300;
+  --air-pale: #fff4dc;
+  --danger: #b4232a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0b0f19;
-    --foreground: #f3f4f6;
+    --ground: #000000;
+    --raised: #161616;
+    --line: #2a2a2a;
+    --control: #4a4a4a;
+    --ink: #ffffff;
+    --muted: #b0b0b0;
+    --primary: #ffffff;
+    --on-primary: #000000;
+    --air: #f5b335;
+    --air-ink: #f5b335;
+    --air-pale: #2a1f08;
+    --danger: #f06b72;
   }
 }
 
+@theme inline {
+  --color-ground: var(--ground);
+  --color-raised: var(--raised);
+  --color-line: var(--line);
+  --color-control: var(--control);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-on-primary: var(--on-primary);
+  --color-air: var(--air);
+  --color-air-ink: var(--air-ink);
+  --color-air-pale: var(--air-pale);
+  --color-danger: var(--danger);
+  --font-sans: var(--font-brand), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--ground);
+  color: var(--ink);
   font-family: var(--font-sans);
+}
+
+/* Controlli condivisi: campi a raggio 12, pulsanti a pillola (come il logo tondo). */
+@utility field {
+  @apply w-full rounded-xl border border-control bg-ground px-4 text-base text-ink placeholder:text-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink;
+}
+@utility btn {
+  @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-5 text-base font-semibold transition-[background-color,opacity,transform] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink active:scale-[0.97] disabled:cursor-not-allowed;
+}
+@utility btn-primary {
+  @apply btn bg-primary text-on-primary hover:opacity-85 disabled:bg-raised disabled:text-muted disabled:opacity-100;
+}
+@utility btn-secondary {
+  @apply btn border border-control bg-ground text-ink hover:bg-raised disabled:opacity-60;
 }
 
 @media (prefers-reduced-motion: reduce) {

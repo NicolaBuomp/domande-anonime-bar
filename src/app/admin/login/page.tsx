@@ -20,7 +20,7 @@ export default async function LoginPage({ searchParams }: PageProps<"/admin/logi
 
   return (
     <main className="mx-auto flex w-full max-w-sm flex-1 flex-col justify-center gap-6 px-4 py-10">
-      <header className="flex flex-col items-center gap-3 text-center">
+      <header className="flex flex-col items-start gap-4">
         <Image src={site.logoSrc} alt={site.barName} width={56} height={56} unoptimized />
         <h1 className="text-2xl font-bold">{t.login.title}</h1>
       </header>
