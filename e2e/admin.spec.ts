@@ -62,3 +62,19 @@ test("telefono → /admin senza reload → in onda → /screen → letta → eli
   await screen.context().close();
   await admin.context().close();
 });
+
+test("/admin/qr: protetto, QR dell'URL di produzione (non della richiesta)", async ({ page }) => {
+  await page.goto("/admin/qr");
+  await expect(page).toHaveURL(/\/admin\/login\?next=%2Fadmin%2Fqr/);
+
+  await page.getByLabel("Email").fill(process.env.E2E_ADMIN_EMAIL!);
+  await page.getByLabel("Password").fill(process.env.E2E_ADMIN_PASSWORD!);
+  await page.getByRole("button", { name: "Entra" }).click();
+  await expect(page).toHaveURL(/\/admin\/qr$/);
+
+  const siteUrl = process.env.E2E_SITE_URL ?? "http://localhost:3000";
+  const qr = page.getByRole("img", { name: `QR code: ${siteUrl}` });
+  await expect(qr).toBeVisible();
+  await expect(qr).toHaveAttribute("src", /^data:image\/svg\+xml;base64,/);
+  await expect(page.getByRole("button", { name: "Stampa" })).toBeVisible();
+});

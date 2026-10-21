@@ -61,3 +61,20 @@ test("schermo 1920×1080: corta, 300 caratteri, in attesa", async ({ browser }, 
   await page.screenshot({ path: `${OUT}/screen-1920-attesa.png` });
   await page.context().close();
 });
+
+test("QR: anteprima, stampa e PDF A4", async ({ browser, browserName }, testInfo) => {
+  const page = await newDevicePage(browser, testInfo, { width: 1280, height: 900 });
+  await page.goto("/admin/qr");
+  await page.getByLabel("Email").fill(process.env.E2E_ADMIN_EMAIL!);
+  await page.getByLabel("Password").fill(process.env.E2E_ADMIN_PASSWORD!);
+  await page.getByRole("button", { name: "Entra" }).click();
+  await page.getByRole("img", { name: /QR code/ }).waitFor();
+  await page.screenshot({ path: `${OUT}/qr-anteprima.png`, fullPage: true });
+
+  await page.emulateMedia({ media: "print" });
+  await page.screenshot({ path: `${OUT}/qr-stampa.png`, fullPage: true });
+  if (browserName === "chromium") {
+    await page.pdf({ path: `${OUT}/qr-a4.pdf`, format: "A4", printBackground: true });
+  }
+  await page.context().close();
+});

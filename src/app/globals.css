@@ -46,3 +46,21 @@ body {
 .screen-fade {
   animation: screen-fade-in 300ms ease-out;
 }
+
+/* /admin/qr: un foglio A4, QR di almeno 12 cm (spec §2.5) */
+@page {
+  size: A4;
+  margin: 15mm;
+}
+@media print {
+  .qr-sheet {
+    width: 180mm;
+    max-width: none;
+    height: 267mm;
+    aspect-ratio: auto;
+    padding: 10mm;
+  }
+  .qr-code {
+    width: 125mm;
+  }
+}
