@@ -1,6 +1,6 @@
 import { test } from "@playwright/test";
-import { loginAsAdmin, newDevicePage, TABLET } from "./helpers";
-import { seedEvening } from "./local-db";
+import { loginAsAdmin, newDevicePage, PROJECTOR, TABLET } from "./helpers";
+import { LONG_QUESTION, putOnAir, seedEvening } from "./local-db";
 
 // Screenshot da controllare a mano (artifacts/screenshots, gitignored).
 // Solo in locale e su un progetto: popola il DB con dati realistici.
@@ -40,4 +40,24 @@ test("admin: telefono e tablet", async ({ browser }, testInfo) => {
     await page.screenshot({ path: `${OUT}/admin-${name}-lette.png`, fullPage: true });
     await page.context().close();
   }
+});
+
+test("schermo 1920×1080: corta, 300 caratteri, in attesa", async ({ browser }, testInfo) => {
+  await seedEvening();
+  const page = await newDevicePage(browser, testInfo, PROJECTOR);
+  await page.goto("/screen");
+  await page.getByRole("blockquote").filter({ hasText: "cocktail" }).waitFor();
+  await page.waitForTimeout(400); // fine dissolvenza
+  await page.screenshot({ path: `${OUT}/screen-1920-corta.png` });
+
+  await putOnAir(LONG_QUESTION);
+  await page.getByRole("blockquote").filter({ hasText: "bancone" }).waitFor();
+  await page.waitForTimeout(400); // fine dissolvenza
+  await page.screenshot({ path: `${OUT}/screen-1920-300-caratteri.png` });
+
+  await putOnAir(null);
+  await page.getByRole("heading", { name: "Hai una domanda?" }).waitFor();
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: `${OUT}/screen-1920-attesa.png` });
+  await page.context().close();
 });

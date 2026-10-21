@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loginAsAdmin, newDevicePage, sendQuestion, TABLET } from "./helpers";
+import { loginAsAdmin, newDevicePage, PROJECTOR, sendQuestion, TABLET } from "./helpers";
 
 test("/admin senza sessione → login", async ({ page }) => {
   await page.goto("/admin");
@@ -17,13 +17,18 @@ test("credenziali sbagliate → messaggio generico", async ({ page }) => {
   );
 });
 
-test("domanda dal telefono → compare in /admin senza reload → in onda → letta → eliminata", async ({
+test("telefono → /admin senza reload → in onda → /screen → letta → eliminata", async ({
   browser,
   page: phone,
 }, testInfo) => {
   const admin = await newDevicePage(browser, testInfo, TABLET);
   await loginAsAdmin(admin);
   await expect(admin.getByTestId("conn-status")).toHaveAttribute("data-conn", "live");
+
+  const screen = await newDevicePage(browser, testInfo, PROJECTOR);
+  await screen.goto("/screen");
+  await expect(screen.locator("main")).toHaveAttribute("data-conn", "live");
+  await expect(screen.getByRole("heading", { name: "Hai una domanda?" })).toBeVisible();
 
   const text = `Realtime e2e ${testInfo.project.name} ${Date.now()}`;
   await sendQuestion(phone, text, "Giulia");
@@ -37,8 +42,16 @@ test("domanda dal telefono → compare in /admin senza reload → in onda → le
   const onAir = admin.locator("section", { has: admin.locator("#on-air-title") });
   await expect(onAir.getByRole("article")).toContainText(text);
 
+  // /screen fa polling ogni 30 s: entro 10 s vuol dire Realtime
+  await expect(screen.getByRole("blockquote")).toHaveText(text, { timeout: 10_000 });
+  await expect(screen.getByText("— Giulia")).toBeVisible();
+
   await onAir.getByRole("button", { name: "Letta" }).click();
   await expect(onAir).toContainText("Niente in onda.");
+  await expect(screen.getByRole("heading", { name: "Hai una domanda?" })).toBeVisible({
+    timeout: 10_000,
+  });
+  await expect(screen.getByText(text)).toHaveCount(0);
 
   await admin.getByText(/^Lette \(\d+\)$/).click();
   const readCard = admin.getByRole("article").filter({ hasText: text });
@@ -46,5 +59,6 @@ test("domanda dal telefono → compare in /admin senza reload → in onda → le
   await readCard.getByRole("button", { name: "Sicuro?" }).click();
   await expect(admin.getByRole("article").filter({ hasText: text })).toHaveCount(0);
 
+  await screen.context().close();
   await admin.context().close();
 });

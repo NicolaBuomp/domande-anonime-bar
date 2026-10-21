@@ -448,3 +448,5 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 | S3 | Pagine protette nel route group `src/app/admin/(protected)/`; `/admin/login` fuori dal gruppo | Il layout con `getUser()` non deve coprire la pagina di login. Gli URL non cambiano. |
 | S3 | "Elimina" spostato nella riga nickname/orario della card | Visto negli screenshot: su telefono e tablet andava a capo su una riga a sé. Così ogni card perde una riga e l'azione distruttiva resta lontana da "Manda in onda". |
 | S3 | `e2e/visual.spec.ts` e `e2e/local-db.ts` anticipati da S7 (form e admin) | Servivano per la verifica visiva di S3; S7 aggiungerà `/screen` e `/admin/qr`. |
+| S4 | Trigger anche su `TRUNCATE` (oltre a insert/update/delete) e aggiornamento di `screen_state` solo se cambia | Lo svuotamento d'emergenza del runbook usa `truncate` e deve pulire anche lo schermo. Aggiornare solo se cambia evita un evento Realtime a ogni nuova domanda. |
+| S4 | Il logo d'angolo di `/screen` si vede solo quando c'è una domanda in onda | Visto negli screenshot: in attesa il logo compariva due volte (angolo e centro). |

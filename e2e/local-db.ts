@@ -17,7 +17,7 @@ export function localServiceClient() {
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
 
 export const LONG_QUESTION =
-  "Volevo chiedere una cosa che mi incuriosisce da tempo: come avete scelto il nome del locale, chi ha disegnato il logo, e se c'è una storia dietro al bancone di legno che sembra antichissimo? Ah, e già che ci sono: farete altre serate così anche il mese prossimo? Grazie mille, bella serata!";
+  "Volevo chiedere una cosa che mi incuriosisce da tempo: come avete scelto il nome del locale, chi ha disegnato il logo, e se c'è una storia dietro al bancone di legno che sembra antichissimo? Ah, e già che ci sono: farete altre serate così anche il mese prossimo? Grazie mille, bella serata! A presto!";
 
 /** Svuota e popola il DB con una serata realistica. */
 export async function seedEvening() {
@@ -68,4 +68,11 @@ export async function seedEvening() {
   ];
   const { error } = await db.from("questions").insert(rows);
   if (error) throw error;
+}
+
+/** Mette in onda la domanda con quel testo (la precedente diventa letta). */
+export async function putOnAir(text: string | null) {
+  const db = localServiceClient();
+  await db.from("questions").update({ status: "read" }).eq("status", "on_air");
+  if (text) await db.from("questions").update({ status: "on_air" }).eq("text", text);
 }

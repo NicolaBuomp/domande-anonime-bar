@@ -33,3 +33,16 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* /screen: dissolvenza al cambio di domanda (disattivata da prefers-reduced-motion qui sopra) */
+@keyframes screen-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.screen-fade {
+  animation: screen-fade-in 300ms ease-out;
+}
