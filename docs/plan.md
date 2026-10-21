@@ -425,3 +425,16 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 5. **GitHub**: secret `ANTHROPIC_API_KEY` per la claude-code-action. OK alla branch protection (la applico io con `gh` in S8).
 6. **Nome del bar, logo, dominio** (spec B2), appena li hai.
 7. **Push del branch `build/mvp` e PR in draft dopo S0**: l'approvazione di questo piano vale come OK per il push del branch (non di `main`).
+
+---
+
+## 13. Deviazioni dal piano (registro)
+
+| Step | Deviazione | Motivo |
+|---|---|---|
+| S0 | `cacheComponents` (e `partialPrefetching`) **disattivati** in `next.config.ts`, attivi di default nel template Next 16.4 | Con Cache Components ogni lettura dei cookie (sessione admin) deve stare in `<Suspense>`, pena errore di build, più la validazione "instant navigation". L'app è quasi tutta dinamica o client: il modello classico ha meno trappole. |
+| S0 | `@tailwindcss/turbopack` al posto di `@tailwindcss/postcss` | È quello che genera il template di Next 16.4 (loader Turbopack). Nessun `postcss.config.mjs`. |
+| S0 | `@types/node@^24` (il template usava `^20`) e `"type": "module"` in `package.json` | vitest 5 richiede `@types/node` ≥ 22, e il runtime è Node 24. Il modulo ESM elimina l'avviso di Vite sulla config. |
+| S0 | Porte Supabase locali **553xx** (API 55321, DB 55322) invece di 543xx | Sulla macchina gira già un altro progetto Supabase locale sulle porte di default. In CI non cambia nulla. |
+| S0 | Aggiunto `e2e/smoke.spec.ts` | Verifica fin da S0 che la pipeline Playwright (build + start + Chromium/WebKit) funzioni. |
+| S0 | L'hook su Bash blocca **qualsiasi** comando che contenga un deploy in produzione, anche dentro `echo` o `grep` | Falso positivo accettato: meglio bloccare troppo che troppo poco. Per testare l'hook si usano payload da file. |
