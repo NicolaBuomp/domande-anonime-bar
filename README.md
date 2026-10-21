@@ -6,4 +6,4 @@ Domande anonime per la serata al bar: il pubblico scrive da telefono (QR), il ge
 - Come e in che ordine: [docs/plan.md](docs/plan.md)
 - Comandi e regole per chi ci lavora: [CLAUDE.md](CLAUDE.md)
 
-Avvio locale: `supabase start`, poi copia `.env.example` in `.env.local` con i valori di `supabase status` e lancia `npm run dev`.
+Avvio locale: `supabase start`, poi `npm run dev`. Il dev server usa sempre il database locale (chiavi lette da `supabase status`, che hanno la precedenza su `.env.local`): non tocca mai il progetto remoto. Per entrare in `/admin` crea un gestore locale con `npm run admin:local -- tu@example.test`.

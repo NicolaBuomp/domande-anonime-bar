@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev",
-    "dev:local": "node scripts/with-local-env.mjs next dev",
+    "dev": "node scripts/with-local-env.mjs next dev",
+    "admin:local": "node scripts/with-local-env.mjs node scripts/create-local-admin.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",

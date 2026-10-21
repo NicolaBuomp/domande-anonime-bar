@@ -13,12 +13,9 @@ export function relativeTime(iso: string, now: number): string {
   return rtf.format(-Math.round(s / 3600), "hour");
 }
 
-const btn =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-xl px-4 text-base font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:cursor-wait disabled:opacity-60";
-
 function Icon({ d }: { d: string }) {
   return (
-    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" className="shrink-0">
+    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" className="shrink-0">
       <path
         d={d}
         fill="none"
@@ -70,49 +67,48 @@ export function QuestionCard({
   return (
     <article
       className={[
-        "flex flex-col gap-3 rounded-2xl border p-4 transition-colors duration-700",
-        onAir
-          ? "border-amber-500 bg-amber-50 dark:border-amber-400 dark:bg-amber-950/60"
-          : "border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900",
-        fresh ? "ring-4 ring-amber-300 dark:ring-amber-600" : "",
-        variant === "read" ? "opacity-80" : "",
+        "flex flex-col gap-3 px-4 py-4 transition-colors duration-700 sm:flex-row sm:items-center sm:gap-6",
+        onAir ? "py-5" : "",
+        fresh ? "bg-air-pale" : "",
       ].join(" ")}
     >
-      <p
-        className={`whitespace-pre-wrap break-words ${onAir ? "text-xl font-semibold" : "text-lg"}`}
-      >
-        {q.text}
-      </p>
-      {/* Elimina sta qui, lontano dalle azioni principali: meno tap sbagliati, una riga in meno */}
-      <div className="flex items-center justify-between gap-2">
-        <p className="text-sm text-gray-600 dark:text-gray-400">
-          <span className="font-medium">{q.nickname ?? t.admin.anonymous}</span>
-          {" · "}
-          <time dateTime={q.created_at}>{relativeTime(q.created_at, now)}</time>
-        </p>
-        <button
-          type="button"
-          onClick={() => (confirming ? (setConfirming(false), onDelete()) : setConfirming(true))}
-          disabled={busy}
-          aria-live="polite"
-          className={`${btn} -mr-2 shrink-0 px-3 ${
-            confirming
-              ? "bg-red-700 text-white hover:bg-red-600"
-              : "text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950"
-          }`}
+      <div className="flex min-w-0 flex-1 flex-col gap-1">
+        <p
+          className={`break-words whitespace-pre-wrap ${
+            onAir ? "text-[1.375rem] leading-snug font-semibold" : "text-lg leading-snug"
+          } ${variant === "read" ? "text-muted" : ""}`}
         >
-          <Icon d={ICON.delete} />
-          {confirming ? t.admin.confirmDelete : t.admin.delete}
-        </button>
+          {q.text}
+        </p>
+        {/* Elimina sta qui, lontano dalle azioni principali: meno tap sbagliati, una riga in meno */}
+        <div className="flex items-center gap-3">
+          <p className="text-sm text-muted">
+            <span className="font-medium text-ink">{q.nickname ?? t.admin.anonymous}</span>
+            {" · "}
+            <time dateTime={q.created_at}>{relativeTime(q.created_at, now)}</time>
+          </p>
+          <button
+            type="button"
+            onClick={() => (confirming ? (setConfirming(false), onDelete()) : setConfirming(true))}
+            disabled={busy}
+            aria-live="polite"
+            className={`ml-auto inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-full px-3 text-sm font-semibold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink disabled:cursor-wait disabled:opacity-60 sm:ml-0 ${
+              confirming ? "bg-danger text-on-primary" : "text-danger hover:bg-raised"
+            }`}
+          >
+            <Icon d={ICON.delete} />
+            {confirming ? t.admin.confirmDelete : t.admin.delete}
+          </button>
+        </div>
       </div>
       {variant === "read" ? null : (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex shrink-0 gap-2">
           {variant === "new" && onGoOnAir ? (
             <button
               type="button"
               onClick={onGoOnAir}
               disabled={busy}
-              className={`${btn} bg-amber-500 text-gray-950 hover:bg-amber-400`}
+              className="btn-primary flex-1 disabled:cursor-wait sm:flex-none"
             >
               <Icon d={ICON.onAir} />
               {t.admin.goOnAir}
@@ -123,7 +119,7 @@ export function QuestionCard({
               type="button"
               onClick={onMarkRead}
               disabled={busy}
-              className={`${btn} border border-gray-300 bg-white text-gray-900 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700`}
+              className="btn-secondary disabled:cursor-wait"
             >
               <Icon d={ICON.read} />
               {t.admin.markRead}

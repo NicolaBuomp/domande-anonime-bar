@@ -7,7 +7,7 @@ export function PrintButton() {
     <button
       type="button"
       onClick={() => window.print()}
-      className="min-h-12 rounded-xl bg-amber-500 px-6 text-lg font-bold text-gray-950 hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
+      className="btn-primary min-h-12 px-6 text-lg"
     >
       {t.qr.print}
     </button>

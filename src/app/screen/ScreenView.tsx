@@ -105,16 +105,19 @@ export function ScreenView({ siteUrl }: { siteUrl: string | null }) {
       className={`fixed inset-0 flex flex-col overflow-hidden bg-black text-white ${cursorHidden ? "cursor-none" : ""}`}
       data-conn={connected ? "live" : "down"}
     >
-      {/* logo d'angolo solo quando c'è una domanda: in attesa il logo è già al centro */}
+      {/* logo e nome d'angolo solo quando c'è una domanda: in attesa sono già al centro */}
       {current ? (
-        <Image
-          src={site.logoSrc}
-          alt={site.barName}
-          width={96}
-          height={96}
-          unoptimized
-          className="absolute top-[3vh] left-[3vw] h-[6vh] w-auto opacity-90"
-        />
+        <div className="absolute top-[3vh] left-[3vw] flex items-center gap-[1vw] opacity-90">
+          <Image
+            src={site.logoSrc}
+            alt=""
+            width={96}
+            height={96}
+            unoptimized
+            className="h-[6vh] w-auto"
+          />
+          <span className="text-[1.6vw] font-medium text-white/70">{site.barName}</span>
+        </div>
       ) : null}
 
       <div
@@ -124,13 +127,13 @@ export function ScreenView({ siteUrl }: { siteUrl: string | null }) {
         {current ? (
           <figure key={current.text} className="screen-fade flex max-w-full flex-col gap-[3vh]">
             <blockquote
-              className="font-bold leading-[1.2] break-words whitespace-pre-wrap"
+              className="leading-[1.12] font-bold tracking-[-0.02em] break-words whitespace-pre-wrap"
               style={{ fontSize: fontSizeFor(current.text) }}
             >
               {current.text}
             </blockquote>
             {current.nickname ? (
-              <figcaption className="text-[2.6vw] font-medium text-amber-300">
+              <figcaption className="text-[2.6vw] font-medium text-[#f5b335]">
                 — {current.nickname}
               </figcaption>
             ) : null}
@@ -143,19 +146,22 @@ export function ScreenView({ siteUrl }: { siteUrl: string | null }) {
               width={240}
               height={240}
               unoptimized
-              className="h-[22vh] w-auto"
+              className="h-[20vh] w-auto"
             />
-            <h1 className="text-[5.5vw] leading-tight font-bold">{t.screen.idleTitle}</h1>
-            <p className="text-[2.8vw] text-gray-200">{t.screen.idleBody}</p>
+            <p className="-mt-[1vh] text-[2vw] font-medium text-white/70">{site.barName}</p>
+            <h1 className="text-[6vw] leading-none font-bold tracking-[-0.03em]">
+              {t.screen.idleTitle}
+            </h1>
+            <p className="text-[2.8vw] text-white/85">{t.screen.idleBody}</p>
             {shortUrl ? (
-              <p className="text-[2.4vw] font-semibold text-amber-300">{shortUrl}</p>
+              <p className="text-[2.4vw] font-semibold text-[#f5b335]">{shortUrl}</p>
             ) : null}
           </div>
         )}
       </div>
 
       {showOffline ? (
-        <p className="absolute right-[2vw] bottom-[2vh] rounded-full bg-gray-800 px-4 py-2 text-[1.1vw] text-gray-200">
+        <p className="absolute right-[2vw] bottom-[2vh] rounded-full bg-[#222] px-4 py-2 text-[1.1vw] text-white/80">
           {t.screen.reconnecting}
         </p>
       ) : null}

@@ -206,31 +206,37 @@ export function AdminBoard() {
     offline: { label: t.admin.offline, dot: "bg-red-600" },
   };
   const c = conns[conn];
-  const linkBtn =
-    "inline-flex min-h-11 items-center rounded-xl px-3 font-semibold hover:bg-gray-100 focus-visible:outline-2 focus-visible:outline-amber-600 dark:hover:bg-gray-800";
+  const navLink =
+    "inline-flex min-h-11 items-center rounded-full px-3 text-[15px] font-medium text-muted hover:bg-raised hover:text-ink focus-visible:outline-2 focus-visible:outline-ink";
+  // righe divise da un filo, nessuna card a griglia: altezze diverse non lasciano buchi
+  const list = "divide-y divide-line overflow-hidden rounded-2xl border border-line";
+  const empty = "rounded-2xl border border-dashed border-control px-4 py-4 text-muted";
 
   return (
-    <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-4 pb-10">
-      <header className="flex flex-wrap items-center gap-2 border-b border-gray-200 py-3 dark:border-gray-800">
+    <div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 pb-12">
+      <header className="flex flex-wrap items-center gap-x-3 gap-y-1 pt-4">
         <Image src={site.logoSrc} alt="" width={36} height={36} unoptimized />
-        <h1 className="mr-auto text-xl font-bold">{t.admin.title}</h1>
+        <div className="mr-auto flex items-baseline gap-2">
+          <h1 className="text-2xl font-bold tracking-[-0.01em]">{t.admin.title}</h1>
+          <span className="hidden text-sm text-muted sm:inline">{site.barName}</span>
+        </div>
         <p
           className="flex items-center gap-2 text-sm font-medium"
           role="status"
           data-testid="conn-status"
           data-conn={conn}
         >
-          <span className={`inline-block h-3 w-3 rounded-full ${c.dot}`} aria-hidden="true" />
+          <span className={`inline-block h-2.5 w-2.5 rounded-full ${c.dot}`} aria-hidden="true" />
           <span className={conn === "offline" ? "max-w-48 sm:max-w-none" : ""}>{c.label}</span>
         </p>
-        <nav className="flex items-center gap-1">
-          <a href="/admin/qr" className={linkBtn}>
+        <nav className="-mx-3 flex w-full items-center sm:mx-0 sm:w-auto">
+          <a href="/admin/qr" className={navLink}>
             {t.admin.linkQr}
           </a>
-          <a href="/screen" target="_blank" rel="noopener" className={linkBtn}>
+          <a href="/screen" target="_blank" rel="noopener" className={navLink}>
             {t.admin.linkScreen}
           </a>
-          <button type="button" onClick={logout} className={linkBtn}>
+          <button type="button" onClick={logout} className={`${navLink} ml-auto sm:ml-0`}>
             {t.admin.logout}
           </button>
         </nav>
@@ -242,10 +248,7 @@ export function AdminBoard() {
           className="flex flex-wrap items-center gap-3 rounded-2xl bg-red-50 px-4 py-3 text-red-900 dark:bg-red-950 dark:text-red-100"
         >
           <p className="font-semibold">{t.admin.sessionExpired}</p>
-          <a
-            href="/admin/login?next=/admin"
-            className="inline-flex min-h-11 items-center rounded-xl bg-red-700 px-4 font-semibold text-white"
-          >
+          <a href="/admin/login?next=/admin" className="btn bg-red-700 text-white">
             {t.admin.loginAgain}
           </a>
         </div>
@@ -255,42 +258,47 @@ export function AdminBoard() {
         {announcement}
       </p>
 
+      {/* fissa in alto e opaca: la domanda in onda resta sempre sotto il pollice */}
       <section
         aria-labelledby="on-air-title"
-        className="sticky top-0 z-10 -mx-4 bg-[var(--background)]/95 px-4 py-2 backdrop-blur"
+        className="sticky top-0 z-10 -mx-4 flex flex-col gap-3 bg-ground px-4 py-3"
       >
-        <h2
-          id="on-air-title"
-          className="mb-2 text-sm font-bold uppercase tracking-wide text-amber-800 dark:text-amber-300"
-        >
+        <h2 id="on-air-title" className="flex items-center gap-2 text-base font-semibold">
+          {/* la spia "in onda": accesa solo quando c'è qualcosa sullo schermo */}
+          <span
+            aria-hidden="true"
+            className={`inline-block h-3 w-3 rounded-full ${
+              onAir ? "bg-air shadow-[0_0_0_4px_var(--air-pale)]" : "border-2 border-control"
+            }`}
+          />
           {t.admin.onAir}
         </h2>
         {onAir ? (
-          <QuestionCard
-            q={onAir}
-            now={now}
-            busy={pending.has(onAir.id)}
-            variant="onAir"
-            onMarkRead={() => markRead(onAir.id)}
-            onDelete={() => remove(onAir.id)}
-          />
+          <div className="overflow-hidden rounded-2xl border border-line border-l-[6px] border-l-air">
+            <QuestionCard
+              q={onAir}
+              now={now}
+              busy={pending.has(onAir.id)}
+              variant="onAir"
+              onMarkRead={() => markRead(onAir.id)}
+              onDelete={() => remove(onAir.id)}
+            />
+          </div>
         ) : (
-          <p className="rounded-2xl border border-dashed border-gray-300 p-4 text-gray-600 dark:border-gray-700 dark:text-gray-400">
-            {t.admin.noOnAir}
-          </p>
+          <p className={empty}>{t.admin.noOnAir}</p>
         )}
       </section>
 
       <section aria-labelledby="new-title" className="flex flex-col gap-3">
-        <h2 id="new-title" className="text-lg font-bold">
+        <h2 id="new-title" className="text-base font-semibold">
           {t.admin.new} ({newOnes.length})
         </h2>
         {!loaded ? null : questions.size === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">{t.admin.emptyAll}</p>
+          <p className={empty}>{t.admin.emptyAll}</p>
         ) : newOnes.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">{t.admin.emptyNew}</p>
+          <p className={empty}>{t.admin.emptyNew}</p>
         ) : (
-          <div className="grid gap-3 md:grid-cols-2">
+          <div className={list}>
             {newOnes.map((q) => (
               <QuestionCard
                 key={q.id}
@@ -309,11 +317,20 @@ export function AdminBoard() {
       </section>
 
       {read.length > 0 ? (
-        <details className="group flex flex-col gap-3">
-          <summary className="min-h-11 cursor-pointer py-2 text-lg font-bold">
+        <details className="group flex flex-col">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-base font-semibold [&::-webkit-details-marker]:hidden">
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              aria-hidden="true"
+              className="shrink-0 text-muted transition-transform group-open:rotate-90"
+            >
+              <path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" strokeWidth="2.2" />
+            </svg>
             {t.admin.read} ({read.length})
           </summary>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className={`mt-3 ${list}`}>
             {read.map((q) => (
               <QuestionCard
                 key={q.id}
@@ -331,7 +348,7 @@ export function AdminBoard() {
       {toast ? (
         <div
           role="status"
-          className="fixed inset-x-4 bottom-4 z-20 mx-auto max-w-md rounded-xl bg-gray-900 px-4 py-3 text-center font-medium text-white shadow-lg dark:bg-gray-100 dark:text-gray-900"
+          className="fixed inset-x-4 bottom-4 z-20 mx-auto max-w-md rounded-full bg-primary px-5 py-3 text-center font-medium text-on-primary shadow-lg"
         >
           {toast}
         </div>

@@ -317,7 +317,8 @@ Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si
 | `form.serverError` | Qualcosa è andato storto. Riprova tra poco. |
 | `form.closed` | Per stasera le domande sono chiuse. Grazie! |
 | `form.privacy` | Non salviamo chi sei. Per evitare lo spam teniamo un codice tecnico anonimo, cancellato dopo 48 ore insieme alle domande. |
-| `thanks.title` | Grazie! 🙌 |
+| `thanks.title` | Grazie! |
+| `thanks.body` | La tua domanda è arrivata al bancone. |
 | `thanks.again` | Fai un'altra domanda |
 | `login.title` | Area gestore |
 | `login.email` | Email |
@@ -338,7 +339,7 @@ Ogni riga viene cancellata fra 48 e 49 ore dopo l'inserimento. `screen_state` si
 | `admin.delete` | Elimina |
 | `admin.confirmDelete` | Sicuro? |
 | `admin.emptyAll` | Ancora nessuna domanda. Arriveranno qui da sole. |
-| `admin.emptyNew` | Hai letto tutto. 🎉 |
+| `admin.emptyNew` | Hai letto tutto. |
 | `admin.actionError` | Non ci sono riuscito, riprova. |
 | `admin.sessionExpired` | Sessione scaduta. |
 | `admin.loginAgain` | Accedi di nuovo |

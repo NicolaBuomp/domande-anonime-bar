@@ -4,7 +4,7 @@
     {
       "name": "dev-local",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev:local"],
+      "runtimeArgs": ["run", "dev"],
       "port": 3000
     },
     {

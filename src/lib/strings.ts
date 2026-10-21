@@ -24,7 +24,8 @@ export const t = {
       "Non salviamo chi sei. Per evitare lo spam teniamo un codice tecnico anonimo, cancellato dopo 48 ore insieme alle domande.",
   },
   thanks: {
-    title: "Grazie! 🙌",
+    title: "Grazie!",
+    body: "La tua domanda è arrivata al bancone.",
     again: "Fai un'altra domanda",
   },
   login: {
@@ -49,7 +50,7 @@ export const t = {
     delete: "Elimina",
     confirmDelete: "Sicuro?",
     emptyAll: "Ancora nessuna domanda. Arriveranno qui da sole.",
-    emptyNew: "Hai letto tutto. 🎉",
+    emptyNew: "Hai letto tutto.",
     announceNew: (text: string) => `Nuova domanda: ${text}`,
     actionError: "Non ci sono riuscito, riprova.",
     sessionExpired: "Sessione scaduta.",

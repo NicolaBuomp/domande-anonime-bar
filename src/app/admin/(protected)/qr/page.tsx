@@ -15,11 +15,11 @@ export default async function QrPage() {
   const qr = url ? await qrDataUri(url) : null;
 
   return (
-    <main className="qr-page flex flex-1 flex-col items-center gap-6 bg-gray-100 px-4 py-6 dark:bg-gray-950 print:bg-white print:p-0">
+    <main className="qr-page flex flex-1 flex-col items-center gap-6 bg-raised px-4 py-6 print:bg-white print:p-0">
       <div className="flex w-full max-w-[210mm] flex-wrap items-center justify-between gap-3 print:hidden">
         <a
           href="/admin"
-          className="inline-flex min-h-11 items-center rounded-xl px-3 font-semibold hover:bg-gray-200 dark:hover:bg-gray-800"
+          className="inline-flex min-h-11 items-center rounded-full px-3 font-semibold hover:bg-raised"
         >
           ← {t.admin.title}
         </a>

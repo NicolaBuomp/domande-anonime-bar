@@ -159,15 +159,18 @@ export function QuestionForm() {
 
   if (sent) {
     return (
-      <section className="flex flex-col items-center gap-6 py-10 text-center" aria-live="polite">
-        <h2 ref={thanksRef} tabIndex={-1} className="text-4xl font-bold outline-none">
-          {t.thanks.title}
-        </h2>
-        <button
-          type="button"
-          onClick={() => setSent(false)}
-          className="min-h-12 rounded-xl px-5 text-base font-semibold text-amber-800 underline underline-offset-4 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:text-amber-300"
-        >
+      <section className="flex flex-col items-start gap-6 py-6" aria-live="polite">
+        <div className="flex flex-col gap-2">
+          <h2
+            ref={thanksRef}
+            tabIndex={-1}
+            className="text-5xl font-bold tracking-[-0.03em] outline-none"
+          >
+            {t.thanks.title}
+          </h2>
+          <p className="text-lg">{t.thanks.body}</p>
+        </div>
+        <button type="button" onClick={() => setSent(false)} className="btn-secondary min-h-12">
           {t.thanks.again}
         </button>
       </section>
@@ -175,9 +178,9 @@ export function QuestionForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-5">
+    <form onSubmit={onSubmit} noValidate className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
-        <label htmlFor={ids.text} className="text-base font-semibold">
+        <label htmlFor={ids.text} className="text-lg font-semibold">
           {t.form.questionLabel}
         </label>
         <textarea
@@ -189,14 +192,12 @@ export function QuestionForm() {
           placeholder={t.form.questionPlaceholder}
           aria-describedby={`${ids.counter} ${error ? ids.error : ""}`.trim()}
           aria-invalid={textCount > MAX_TEXT || undefined}
-          className="w-full resize-y rounded-xl border border-gray-300 bg-white px-4 py-3 text-base text-gray-900 placeholder:text-gray-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100 dark:placeholder:text-gray-400"
+          className="field resize-y py-3 text-lg leading-snug"
         />
         <p
           id={ids.counter}
           className={`self-end text-sm tabular-nums ${
-            textCount > MAX_TEXT
-              ? "font-semibold text-red-700 dark:text-red-400"
-              : "text-gray-600 dark:text-gray-400"
+            textCount > MAX_TEXT ? "font-semibold text-danger" : "text-muted"
           }`}
         >
           {textCount}/{MAX_TEXT}
@@ -204,7 +205,7 @@ export function QuestionForm() {
       </div>
 
       <div className="flex flex-col gap-2">
-        <label htmlFor={ids.nick} className="text-base font-semibold">
+        <label htmlFor={ids.nick} className="text-lg font-semibold">
           {t.form.nicknameLabel}
         </label>
         <input
@@ -216,12 +217,12 @@ export function QuestionForm() {
           onChange={(e) => update(text, e.target.value)}
           aria-describedby={ids.hint}
           aria-invalid={nickCount > MAX_NICKNAME || undefined}
-          className="min-h-12 w-full rounded-xl border border-gray-300 bg-white px-4 text-base text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-100"
+          className="field min-h-12"
         />
-        <p id={ids.hint} className="text-sm text-gray-600 dark:text-gray-400">
+        <p id={ids.hint} className="text-sm text-muted">
           {t.form.nicknameHint}{" "}
           <span
-            className={`tabular-nums ${nickCount > MAX_NICKNAME ? "font-semibold text-red-700 dark:text-red-400" : ""}`}
+            className={`tabular-nums ${nickCount > MAX_NICKNAME ? "font-semibold text-danger" : ""}`}
           >
             ({nickCount}/{MAX_NICKNAME})
           </span>
@@ -236,7 +237,7 @@ export function QuestionForm() {
 
       <div aria-live="polite" className="min-h-6">
         {tooLong && !error ? (
-          <p className="text-base font-medium text-red-700 dark:text-red-400">{t.form.tooLong}</p>
+          <p className="text-base font-medium text-danger">{t.form.tooLong}</p>
         ) : null}
         {error ? (
           <p
@@ -255,7 +256,7 @@ export function QuestionForm() {
         type="submit"
         disabled={!canSubmit}
         aria-disabled={!canSubmit}
-        className="min-h-12 rounded-xl bg-amber-500 px-5 text-lg font-bold text-gray-950 transition-colors hover:bg-amber-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600 disabled:cursor-not-allowed disabled:bg-gray-300 disabled:text-gray-600 dark:disabled:bg-gray-800 dark:disabled:text-gray-400"
+        className="btn-primary min-h-14 text-lg"
       >
         {sending ? t.form.sending : t.form.submit}
       </button>
