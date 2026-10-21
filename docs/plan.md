@@ -450,3 +450,4 @@ Se siamo in ritardo, taglio in quest'ordine, senza toccare build, lint, unit, e2
 | S3 | `e2e/visual.spec.ts` e `e2e/local-db.ts` anticipati da S7 (form e admin) | Servivano per la verifica visiva di S3; S7 aggiungerà `/screen` e `/admin/qr`. |
 | S4 | Trigger anche su `TRUNCATE` (oltre a insert/update/delete) e aggiornamento di `screen_state` solo se cambia | Lo svuotamento d'emergenza del runbook usa `truncate` e deve pulire anche lo schermo. Aggiornare solo se cambia evita un evento Realtime a ogni nuova domanda. |
 | S4 | Il logo d'angolo di `/screen` si vede solo quando c'è una domanda in onda | Visto negli screenshot: in attesa il logo compariva due volte (angolo e centro). |
+| S5 | Client Supabase di `/screen` creato solo negli effetti (non in render) | La build senza env falliva: `/screen` è prerenderizzata e il client veniva creato durante il render. In S8 la CI fa `npm run build` **senza** env Supabase per bloccare la regressione. |

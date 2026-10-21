@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { site } from "@/config/site";
 import { t } from "@/lib/strings";
 import { getBrowserClient } from "@/lib/supabase/browser";
@@ -15,25 +15,26 @@ const OFFLINE_AFTER_MS = 10_000;
 const CURSOR_HIDE_MS = 3_000;
 
 export function ScreenView({ siteUrl }: { siteUrl: string | null }) {
-  const supabase = useMemo(() => getBrowserClient(), []);
   const [current, setCurrent] = useState<OnScreen>(null);
   const [connected, setConnected] = useState(true);
   const [showOffline, setShowOffline] = useState(false);
   const [cursorHidden, setCursorHidden] = useState(false);
 
   const refetch = useCallback(async () => {
-    const { data, error } = await supabase
+    // client creato solo nel browser: la pagina è prerenderizzata in build, senza env
+    const { data, error } = await getBrowserClient()
       .from("screen_state")
       .select("text,nickname")
       .eq("id", 1)
       .single();
     if (error) return; // si tiene l'ultima domanda: meglio che uno schermo vuoto
     setCurrent(data.text ? { text: data.text, nickname: data.nickname } : null);
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- primo caricamento dal DB
     void refetch();
+    const supabase = getBrowserClient();
     const channel = supabase
       .channel("screen", { config: { postgres_changes_options: { wait: true } } })
       .on(
@@ -53,7 +54,7 @@ export function ScreenView({ siteUrl }: { siteUrl: string | null }) {
       clearInterval(poll);
       void supabase.removeChannel(channel);
     };
-  }, [supabase, refetch]);
+  }, [refetch]);
 
   // indicatore discreto solo dopo 10 s di disconnessione
   useEffect(() => {
