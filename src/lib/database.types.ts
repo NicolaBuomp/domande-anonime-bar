@@ -51,6 +51,20 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"screen_state": {
+                  Row: {
+                    "id": number,"nickname": string | null,"text": string | null,"updated_at": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: number,"nickname"?: string | null,"text"?: string | null,"updated_at"?: string
+                  }
+                  Update: {
+                    "id"?: number,"nickname"?: string | null,"text"?: string | null,"updated_at"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 },"submit_log": {
                   Row: {
                     "created_at": string,"device_hash": string,"id": number,"ip_hash": string
