@@ -33,13 +33,17 @@ export default async function QrPage() {
 
       {qr ? (
         <article className="qr-sheet flex aspect-[210/297] w-full max-w-[210mm] flex-col items-center justify-center gap-[3%] bg-white p-[8%] text-center text-gray-950 shadow-lg print:shadow-none">
+          {/* Il logo è un disco nero con linee bianche sottili: stampato diventa una macchia
+              di toner e le linee si chiudono. Sul foglio lo usiamo in negativo (linee nere
+              su carta bianca) e più grande, così il monogramma si legge. Il clip-path
+              taglia il bordo sfumato del disco, che invertito lascerebbe segni grigi. */}
           <Image
             src={site.logoSrc}
             alt={site.barName}
-            width={160}
-            height={160}
+            width={240}
+            height={240}
             unoptimized
-            className="h-auto w-[22%]"
+            className="h-auto w-[30%] invert [clip-path:circle(42%)]"
           />
           <p className="text-[clamp(1rem,3vw,1.75rem)] font-semibold">{site.barName}</p>
           <h1 className="text-[clamp(1.75rem,6vw,3.25rem)] leading-tight font-extrabold">

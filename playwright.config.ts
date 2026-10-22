@@ -5,8 +5,9 @@ import { defineConfig, devices } from "@playwright/test";
 // In locale: build + start con le chiavi dello stack Supabase locale.
 const remote = process.env.E2E_BASE_URL;
 const bypass = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-// porta dedicata: la 3000 può essere occupata da un `next dev` lasciato aperto
-const PORT = 3100;
+// porta dedicata (E2E_PORT): la 3000 può essere occupata da un `next dev` lasciato aperto.
+// Mai riusare un server già in ascolto: potrebbe essere un'altra app (è successo con la 3100).
+const PORT = Number(process.env.E2E_PORT ?? 3197);
 
 function localEnv(): Record<string, string> {
   const s = JSON.parse(
@@ -45,7 +46,7 @@ export default defineConfig({
     : {
         command: `npm run build && npm run start -- -p ${PORT}`,
         url: `http://localhost:${PORT}`,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: false,
         timeout: 180_000,
         env: localEnv(),
       },
